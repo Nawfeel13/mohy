@@ -9,7 +9,6 @@ npm install
 npm run dev       # http://localhost:4321
 npm run build     # vérification des types + génération dans dist/
 npm run preview   # sert le build
-npm start         # serveur de production Node (port 4321)
 npm test          # tests unitaires (Vitest)
 npm run format    # Prettier (Astro + tri des classes Tailwind)
 ```
@@ -40,9 +39,15 @@ Comme sur Oscaro ou Autodoc : le client tape sa plaque, la marque, le modèle, l
 - Protections : clé jamais envoyée au navigateur, appels refusés depuis un autre site, 15 recherches par IP toutes les 10 minutes, cache de 7 jours (une plaque déjà cherchée ne coûte plus de crédit), VIN et données du titulaire jamais renvoyés.
 - Si l’API est absente ou en panne, le site fonctionne normalement : le client indique simplement la marque et le modèle à la main.
 
-### Hébergement
+### Hébergement (Vercel)
 
-L’adaptateur `@astrojs/node` produit un serveur Node (`npm start`), pour un VPS, o2switch, Render, Railway… Pour Netlify, Vercel ou Cloudflare, remplacer l’adaptateur dans `astro.config.mjs` par `@astrojs/netlify`, `@astrojs/vercel` ou `@astrojs/cloudflare` : rien d’autre à changer.
+Le site est configuré pour Vercel (`@astrojs/vercel`) : pages statiques + `/api/vehicule` en fonction serverless.
+
+1. vercel.com/new → importer le dépôt GitHub `mohy` (Vercel détecte Astro tout seul).
+2. Settings → Environment Variables : `SITE_URL` (l’adresse du site) et, une fois l’abonnement pris, `PLATE_API_TOKEN`.
+3. Chaque push redéploie automatiquement.
+
+Le cache et la limite de recherches par IP sont en mémoire : sur Vercel ils valent par instance de fonction (suffisant pour un garage ; un stockage Redis/KV serait la suite logique à fort trafic).
 
 ## Structure
 

@@ -3,7 +3,7 @@ import { defineConfig, envField } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
 import tailwindcss from '@tailwindcss/vite';
 import compress from 'astro-compress';
-import node from '@astrojs/node';
+import vercel from '@astrojs/vercel';
 
 // Domaine définitif à renseigner avant mise en ligne (sert au sitemap, aux balises canonical et Open Graph).
 const SITE_URL = process.env.SITE_URL ?? 'https://www.pareglass-auto.fr';
@@ -11,9 +11,9 @@ const SITE_URL = process.env.SITE_URL ?? 'https://www.pareglass-auto.fr';
 export default defineConfig({
   site: SITE_URL,
   // Pages statiques, sauf /api/vehicule qui tourne côté serveur (clé API cachée).
-  // Hébergement Netlify / Vercel / Cloudflare : remplacer cet adaptateur par celui de la plateforme.
+  // Hébergé sur Vercel : /api/vehicule devient une fonction serverless.
   output: 'static',
-  adapter: node({ mode: 'standalone' }),
+  adapter: vercel(),
   env: {
     schema: {
       // Identification du véhicule par la plaque (voir src/lib/vehicle)
