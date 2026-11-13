@@ -1,0 +1,38 @@
+---
+import LegalPage from '@/components/LegalPage.astro';
+import { site } from '@/config/site';
+---
+
+<LegalPage
+  title="Confidentialité"
+  description={`Comment ${site.name} traite les données envoyées via le formulaire de devis.`}
+>
+  <h2>Données collectées</h2>
+  <p>
+    Le formulaire de devis recueille votre nom, votre numéro de téléphone, l’immatriculation du
+    véhicule, le nom de votre assureur et, si vous le souhaitez, un message et une photo.
+  </p>
+
+  <h2>Utilisation</h2>
+  <p>
+    Ces données servent uniquement à établir votre devis, à vous recontacter et, si vous confiez
+    l’intervention, à gérer la prise en charge avec votre assureur. Elles ne sont ni vendues ni
+    cédées.
+  </p>
+
+  <h2>Durée de conservation</h2>
+  <p>
+    Les demandes sans suite sont supprimées au bout de 3 ans après le dernier contact. Les factures
+    sont conservées 10 ans, comme l’exige la loi.
+  </p>
+
+  <h2>Cookies</h2>
+  <p>Ce site ne dépose aucun cookie publicitaire ni de mesure d’audience.</p>
+
+  <h2>Vos droits</h2>
+  <p>
+    Vous pouvez accéder à vos données, les faire rectifier ou supprimer en appelant le{' '}
+    {site.phone.display}
+    {site.email && <> ou en écrivant à {site.email}</>}. Vous pouvez aussi saisir la CNIL (cnil.fr).
+  </p>
+</LegalPage>

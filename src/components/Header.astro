@@ -1,0 +1,214 @@
+---
+import Logo from './Logo.astro';
+import Icon from './Icon.astro';
+import { site } from '@/config/site';
+import { services } from '@/data/services';
+
+const path = Astro.url.pathname.replace(/\/$/, '') || '/';
+const nav = [
+  { href: '/assurance-franchise-offerte', label: 'Assurance & franchise' },
+  { href: '/intervention-a-domicile', label: 'À domicile' },
+  { href: '/#atelier', label: 'L’atelier' },
+];
+const isServicePage = services.some((s) => path === `/${s.slug}`);
+---
+
+<header class="sticky top-0 z-50 bg-ink text-white" data-header>
+  <div class="hidden border-b border-white/8 lg:block">
+    <div class="mx-auto flex h-9 max-w-7xl items-center justify-between px-6 text-[13px] text-white/65">
+      <p class="flex items-center gap-2">
+        <Icon name="clock" class="size-4 text-neon" />
+        Ouvert {site.hours.label.toLowerCase()} · Intervention à domicile ou au travail
+      </p>
+      <p class="flex items-center gap-2 font-semibold text-white">
+        <Icon name="gift" class="size-4 text-[#ff5a60]" />
+        {site.offer.headline}
+        <a
+          href="/assurance-franchise-offerte"
+          class="font-normal text-white/60 underline underline-offset-2 hover:text-white"
+        >
+          conditions
+        </a>
+      </p>
+    </div>
+  </div>
+
+  <div class="mx-auto flex h-[4.25rem] max-w-7xl items-center justify-between gap-6 px-4 sm:px-6">
+    <a href="/" aria-label="Pareglass Auto, retour à l'accueil" class="shrink-0">
+      <Logo on="dark" />
+    </a>
+
+    <nav aria-label="Navigation principale" class="hidden lg:block">
+      <ul class="flex items-center gap-1 text-[15px] font-semibold">
+        <li class="group relative">
+          <button
+            type="button"
+            class:list={[
+              'flex items-center gap-1.5 rounded px-3 py-2 hover:text-neon',
+              isServicePage && 'text-neon',
+            ]}
+            aria-expanded="false"
+            aria-controls="menu-prestations"
+            data-dropdown
+          >
+            Prestations
+            <svg
+              viewBox="0 0 12 12"
+              class="size-3 transition-transform group-[.is-open]:rotate-180"
+              aria-hidden="true"
+            >
+              <path
+                d="M2.5 4.5 6 8l3.5-3.5"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.8"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              ></path>
+            </svg>
+          </button>
+          <div
+            id="menu-prestations"
+            class="invisible absolute top-full left-0 w-[22rem] translate-y-1 pt-2 opacity-0 transition duration-150 group-[.is-open]:visible group-[.is-open]:translate-y-0 group-[.is-open]:opacity-100"
+          >
+            <ul class="overflow-hidden rounded-lg bg-white p-1.5 text-ink shadow-2xl ring-1 ring-black/5">
+              {services.map((s) => (
+                <li>
+                  <a
+                    href={`/${s.slug}`}
+                    class:list={[
+                      'flex items-center gap-3 rounded-md px-3 py-2.5 hover:bg-paper',
+                      path === `/${s.slug}` && 'bg-paper',
+                    ]}
+                  >
+                    <Icon name={s.icon} class="size-7 shrink-0 text-navy" />
+                    <span class="leading-tight">
+                      <span class="block font-bold">{s.label}</span>
+                      <span class="block text-[13px] font-normal text-mute line-clamp-1">
+                        {s.facts[0].k} : {s.facts[0].v}
+                      </span>
+                    </span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </li>
+        {nav.map((item) => (
+          <li>
+            <a
+              href={item.href}
+              class:list={['rounded px-3 py-2 hover:text-neon', path === item.href && 'text-neon']}
+              aria-current={path === item.href ? 'page' : undefined}
+            >
+              {item.label}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+
+    <div class="flex items-center gap-2">
+      <a
+        href={site.phone.href}
+        class="btn btn-ghost-dark hidden md:inline-flex"
+        data-track="call-header"
+      >
+        <Icon name="phone" class="size-[18px] text-neon" />
+        {site.phone.display}
+      </a>
+      <a href="/devis" class="btn btn-primary hidden sm:inline-flex">
+        Devis gratuit
+      </a>
+      <button
+        type="button"
+        class="-mr-2 grid size-12 place-items-center rounded lg:hidden"
+        aria-expanded="false"
+        aria-controls="menu-mobile"
+        aria-label="Ouvrir le menu"
+        data-burger
+      >
+        <Icon name="menu" class="size-7" />
+      </button>
+    </div>
+  </div>
+
+  <div
+    id="menu-mobile"
+    class="hidden max-h-[calc(100dvh-4.25rem)] overflow-y-auto border-t border-white/10 bg-ink lg:hidden"
+    data-mobile-menu
+  >
+    <nav aria-label="Navigation mobile" class="px-4 pt-3 pb-8">
+      <p class="eyebrow mt-2 mb-2 !text-neon">Prestations</p>
+      <ul class="divide-y divide-white/8">
+        {services.map((s) => (
+          <li>
+            <a href={`/${s.slug}`} class="flex items-center gap-3 py-3.5 text-[17px] font-semibold">
+              <Icon name={s.icon} class="size-6 text-neon" />
+              {s.label}
+            </a>
+          </li>
+        ))}
+      </ul>
+      <ul class="mt-4 divide-y divide-white/8 border-t border-white/8">
+        {nav.map((item) => (
+          <li>
+            <a href={item.href} class="block py-3.5 text-[17px] font-semibold">
+              {item.label}
+            </a>
+          </li>
+        ))}
+        <li>
+          <a href="/devis" class="block py-3.5 text-[17px] font-semibold">
+            Demander un devis
+          </a>
+        </li>
+      </ul>
+      <p class="mt-6 text-sm text-white/60">{site.hours.label}</p>
+    </nav>
+  </div>
+</header>
+
+<script>
+  const header = document.querySelector<HTMLElement>('[data-header]')!;
+
+  // Menu déroulant « Prestations » : clic + survol, fermeture à Échap ou clic extérieur
+  const dd = header.querySelector<HTMLButtonElement>('[data-dropdown]');
+  const li = dd?.parentElement;
+  const setDd = (open: boolean) => {
+    li?.classList.toggle('is-open', open);
+    dd?.setAttribute('aria-expanded', String(open));
+  };
+  dd?.addEventListener('click', () => setDd(dd.getAttribute('aria-expanded') !== 'true'));
+  li?.addEventListener('mouseenter', () => matchMedia('(hover: hover)').matches && setDd(true));
+  li?.addEventListener('mouseleave', () => matchMedia('(hover: hover)').matches && setDd(false));
+  li?.addEventListener('focusout', (e) => {
+    if (!li.contains(e.relatedTarget as Node)) setDd(false);
+  });
+
+  // Menu mobile
+  const burger = header.querySelector<HTMLButtonElement>('[data-burger]')!;
+  const panel = header.querySelector<HTMLElement>('[data-mobile-menu]')!;
+  const setMenu = (open: boolean) => {
+    panel.classList.toggle('hidden', !open);
+    burger.setAttribute('aria-expanded', String(open));
+    burger.setAttribute('aria-label', open ? 'Fermer le menu' : 'Ouvrir le menu');
+    document.documentElement.classList.toggle('overflow-hidden', open);
+  };
+  burger.addEventListener('click', () => setMenu(burger.getAttribute('aria-expanded') !== 'true'));
+  panel.addEventListener('click', (e) => {
+    if ((e.target as HTMLElement).closest('a')) setMenu(false);
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key !== 'Escape') return;
+    setDd(false);
+    if (burger.getAttribute('aria-expanded') === 'true') {
+      setMenu(false);
+      burger.focus();
+    }
+  });
+  document.addEventListener('click', (e) => {
+    if (li && !li.contains(e.target as Node)) setDd(false);
+  });
+</script>

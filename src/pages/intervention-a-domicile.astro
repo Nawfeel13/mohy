@@ -1,0 +1,114 @@
+---
+import Base from '@/layouts/Base.astro';
+import PageHero from '@/components/PageHero.astro';
+import Icon from '@/components/Icon.astro';
+import Faq from '@/components/Faq.astro';
+import CtaBand from '@/components/CtaBand.astro';
+import { site } from '@/config/site';
+
+const need = [
+  { t: 'Un sol plat', d: 'Une place de parking, une cour, une allée de garage.' },
+  {
+    t: 'Un abri en cas de pluie',
+    d: 'La colle ne supporte pas l’eau pendant la pose. Sous un auvent ou dans un parking couvert, c’est idéal.',
+  },
+  {
+    t: 'Les clés du véhicule',
+    d: 'Vous n’avez pas besoin de rester à côté : on vous appelle quand c’est terminé.',
+  },
+];
+
+const where = [
+  { t: 'À domicile', d: 'Devant chez vous, pendant que vous êtes au télétravail ou en week-end.' },
+  { t: 'Au travail', d: 'Sur le parking de votre entreprise, pendant vos heures de bureau.' },
+  {
+    t: 'Flottes et utilitaires',
+    d: 'Artisans, commerçants, petites flottes : on intervient sur place pour limiter l’immobilisation.',
+  },
+];
+
+const faq = [
+  {
+    q: 'Le déplacement est-il facturé ?',
+    a: "On vous l'indique au moment du devis, avant toute intervention. Pas de surprise sur la facture.",
+  },
+  {
+    q: 'Et le calibrage ADAS à domicile ?',
+    a: "Selon le constructeur, le calibrage se fait en roulant (dynamique) ou devant une mire à l'atelier (statique). Si votre véhicule demande un calibrage statique, on vous propose de passer à l'atelier : on vous le dit dès la prise de rendez-vous.",
+  },
+  {
+    q: 'Il pleut le jour du rendez-vous, que se passe-t-il ?',
+    a: 'Sans abri, on décale le rendez-vous plutôt que de bâcler une pose. On vous prévient le matin même.',
+  },
+];
+---
+
+<Base
+  title="Remplacement de pare-brise à domicile ou au travail"
+  description={`On remplace votre pare-brise chez vous ou sur votre lieu de travail, du lundi au samedi. Démarches assurance incluses, ${site.offer.headline.toLowerCase()}.`}
+  schema={[
+    {
+      '@context': 'https://schema.org',
+      '@type': 'FAQPage',
+      mainEntity: faq.map((f) => ({
+        '@type': 'Question',
+        name: f.q,
+        acceptedAnswer: { '@type': 'Answer', text: f.a },
+      })),
+    },
+  ]}
+>
+  <PageHero
+    eyebrow="Intervention mobile"
+    title="On vient à votre voiture"
+    lead="Pas besoin de poser une demi-journée. Notre camion atelier se déplace chez vous ou sur votre lieu de travail, avec le vitrage, les outils et la colle."
+    crumbs={[{ label: 'Intervention à domicile' }]}
+  >
+    <Icon name="van" class="hidden size-40 text-neon/80 lg:block" />
+  </PageHero>
+
+  <section class="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:py-20">
+    <h2 class="display text-3xl text-navy sm:text-4xl">Où on intervient</h2>
+    <ul class="mt-10 grid gap-px overflow-hidden rounded-xl bg-line ring-1 ring-line md:grid-cols-3">
+      {where.map((w) => (
+        <li class="bg-white p-7">
+          <h3 class="text-lg font-bold text-navy">{w.t}</h3>
+          <p class="mt-2 text-mute">{w.d}</p>
+        </li>
+      ))}
+    </ul>
+    {site.serviceArea.length > 0 && (
+      <p class="mt-6 text-mute">
+        Secteur couvert : <strong class="text-ink">{site.serviceArea.join(', ')}</strong> et
+        alentours.
+      </p>
+    )}
+  </section>
+
+  <section class="bg-paper">
+    <div class="mx-auto grid max-w-7xl gap-12 px-4 py-16 sm:px-6 lg:grid-cols-[minmax(0,22rem)_1fr] lg:gap-20 lg:py-20">
+      <div>
+        <p class="eyebrow">À prévoir</p>
+        <h2 class="display mt-4 text-3xl text-navy sm:text-4xl">Ce qu’il nous faut sur place</h2>
+      </div>
+      <ol class="space-y-6">
+        {need.map((n, i) => (
+          <li class="flex gap-5">
+            <span class="display text-4xl text-blue">{i + 1}</span>
+            <div>
+              <h3 class="text-lg font-bold text-navy">{n.t}</h3>
+              <p class="mt-1 text-mute">{n.d}</p>
+            </div>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </section>
+
+  <section class="mx-auto grid max-w-7xl gap-10 px-4 py-16 sm:px-6 lg:grid-cols-[minmax(0,22rem)_1fr] lg:gap-20 lg:py-20">
+    <h2 class="display text-3xl text-navy">Questions fréquentes</h2>
+    <Faq items={faq} />
+  </section>
+
+  <CtaBand title="Choisissez le lieu, on s’adapte" />
+</Base>

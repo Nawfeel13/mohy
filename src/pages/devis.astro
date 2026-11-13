@@ -1,0 +1,343 @@
+---
+import Base from '@/layouts/Base.astro';
+import PageHero from '@/components/PageHero.astro';
+import PlateInput from '@/components/PlateInput.astro';
+import VehicleCard from '@/components/VehicleCard.astro';
+import Icon from '@/components/Icon.astro';
+import { site, insurers } from '@/config/site';
+import { services } from '@/data/services';
+
+const hasEndpoint = Boolean(import.meta.env.PUBLIC_FORM_ENDPOINT);
+const field =
+  'mt-2 block h-12 w-full rounded-md bg-white px-3.5 text-[16px] text-ink ring-1 ring-line placeholder:text-ink/35 focus:ring-2 focus:ring-blue focus:outline-none';
+const label = 'text-[15px] font-semibold text-navy';
+---
+
+<Base
+  title="Devis pare-brise gratuit"
+  description={`Demandez votre devis de remplacement ou de réparation de pare-brise : immatriculation, assureur, lieu d'intervention. Réponse rapide, ${site.offer.headline.toLowerCase()}.`}
+>
+  <PageHero
+    eyebrow="Devis gratuit"
+    title="Votre devis en 1 minute"
+    lead="Votre immatriculation nous suffit pour identifier le bon vitrage. On vous rappelle pour confirmer le créneau et la prise en charge."
+    crumbs={[{ label: 'Devis' }]}
+  />
+
+  <section class="mx-auto grid max-w-7xl gap-12 px-4 py-14 sm:px-6 lg:grid-cols-[1fr_22rem] lg:gap-16 lg:py-20">
+    <form
+      class="min-w-0 space-y-10"
+      method="post"
+      action={import.meta.env.PUBLIC_FORM_ENDPOINT || undefined}
+      enctype="multipart/form-data"
+      novalidate
+      data-quote-form
+      data-whatsapp={site.phone.whatsapp}
+      data-phone={site.phone.display}
+      data-services={JSON.stringify(Object.fromEntries(services.map((s) => [s.slug, s.label])))}
+    >
+      <input
+        type="text"
+        name="_gotcha"
+        tabindex="-1"
+        autocomplete="off"
+        class="hidden"
+        aria-hidden="true"
+      />
+      <input type="hidden" name="_subject" value="Nouvelle demande de devis (site web)" />
+
+      <fieldset class="space-y-6">
+        <legend class="display mb-6 text-xl text-navy">
+          <span class="text-blue">1.</span> Le véhicule
+        </legend>
+        <div class="max-w-md">
+          <label for="f-plate" class={label}>
+            Immatriculation
+          </label>
+          <div class="mt-2 max-w-sm">
+            <PlateInput id="f-plate" required />
+          </div>
+          <input type="hidden" name="vehicule" />
+          <VehicleCard for="f-plate" class="mt-3" />
+        </div>
+        <div data-manual hidden>
+          <label for="f-modele" class={label}>
+            Marque et modèle <span class="font-normal text-mute">(facultatif)</span>
+          </label>
+          <input id="f-modele" name="modele" class={field} placeholder="ex. Peugeot 3008 de 2019" />
+        </div>
+        <div>
+          <label for="f-presta" class={label}>
+            Prestation
+          </label>
+          <select id="f-presta" name="prestation" class={field}>
+            {services.map((s) => (
+              <option value={s.slug}>{s.label}</option>
+            ))}
+            <option value="autre">Je ne sais pas / autre</option>
+          </select>
+        </div>
+        <div>
+          <label for="f-assur" class={label}>
+            Votre assureur <span class="font-normal text-mute">(facultatif)</span>
+          </label>
+          <input
+            id="f-assur"
+            name="assureur"
+            list="assureurs"
+            class={field}
+            placeholder="ex. MAAF"
+            autocomplete="off"
+          />
+          <datalist id="assureurs">
+            {insurers.map((i) => (
+              <option value={i} />
+            ))}
+          </datalist>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend class="display mb-6 text-xl text-navy">
+          <span class="text-blue">2.</span> Où intervenir ?
+        </legend>
+        <div class="grid gap-2.5 sm:grid-cols-3">
+          {[
+            ['atelier', 'À l’atelier'],
+            ['domicile', 'À domicile'],
+            ['travail', 'Au travail'],
+          ].map(([v, t], i) => (
+            <label class="cursor-pointer">
+              <input type="radio" name="lieu" value={v} checked={i === 0} class="peer sr-only" />
+              <span class="flex h-12 items-center justify-center rounded-md bg-white font-semibold ring-1 ring-line transition peer-checked:bg-navy peer-checked:text-white peer-checked:ring-navy peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-blue">
+                {t}
+              </span>
+            </label>
+          ))}
+        </div>
+        <div class="mt-6 max-w-xs" data-cp hidden>
+          <label for="f-cp" class={label}>
+            Code postal du lieu d’intervention
+          </label>
+          <input
+            id="f-cp"
+            name="code_postal"
+            inputmode="numeric"
+            pattern="[0-9]{5}"
+            maxlength="5"
+            class={field}
+            autocomplete="postal-code"
+          />
+        </div>
+      </fieldset>
+
+      <fieldset class="space-y-6">
+        <legend class="display mb-6 text-xl text-navy">
+          <span class="text-blue">3.</span> Vos coordonnées
+        </legend>
+        <div class="grid gap-6 sm:grid-cols-2">
+          <div>
+            <label for="f-nom" class={label}>
+              Nom
+            </label>
+            <input id="f-nom" name="nom" required class={field} autocomplete="name" />
+          </div>
+          <div>
+            <label for="f-tel" class={label}>
+              Téléphone
+            </label>
+            <input
+              id="f-tel"
+              name="telephone"
+              type="tel"
+              required
+              class={field}
+              autocomplete="tel"
+              inputmode="tel"
+              pattern="(\+33|0)\s?[1-9](\s?[0-9]{2}){4}"
+              placeholder="06 12 34 56 78"
+            />
+          </div>
+        </div>
+        <div>
+          <label for="f-msg" class={label}>
+            Précisions <span class="font-normal text-mute">(facultatif)</span>
+          </label>
+          <textarea
+            id="f-msg"
+            name="message"
+            rows="4"
+            class={`${field} h-auto py-3`}
+            placeholder="Taille de l’impact, disponibilités, modèle exact…"
+          ></textarea>
+        </div>
+        {hasEndpoint && (
+          <div>
+            <label for="f-photo" class={label}>
+              Photo des dégâts <span class="font-normal text-mute">(facultatif)</span>
+            </label>
+            <input
+              id="f-photo"
+              name="photo"
+              type="file"
+              accept="image/*"
+              class="mt-2 block w-full text-[15px] file:mr-4 file:rounded-md file:border-0 file:bg-paper file:px-4 file:py-2.5 file:font-semibold file:text-navy"
+            />
+          </div>
+        )}
+        <label class="flex items-start gap-3 text-[15px] text-mute">
+          <input
+            type="checkbox"
+            name="consentement"
+            required
+            class="mt-1 size-5 shrink-0 accent-blue"
+          />
+          <span>
+            J’accepte que mes informations soient utilisées pour traiter ma demande de devis.{' '}
+            <a href="/confidentialite" class="underline underline-offset-2">
+              En savoir plus
+            </a>
+          </span>
+        </label>
+      </fieldset>
+
+      <div class="border-t border-line pt-8">
+        <button type="submit" class="btn btn-primary h-14 w-full px-8 text-base sm:w-auto">
+          {hasEndpoint ? (
+            'Envoyer ma demande'
+          ) : (
+            <>
+              <Icon name="whatsapp" class="size-5" /> Envoyer ma demande par WhatsApp
+            </>
+          )}
+        </button>
+        <p class="mt-4 text-sm text-mute" data-status role="status"></p>
+      </div>
+    </form>
+
+    <aside class="space-y-6 lg:sticky lg:top-28 lg:self-start">
+      <div class="rounded-xl bg-ink p-7 text-white">
+        <p class="text-sm text-white/60">Le plus rapide reste de nous appeler</p>
+        <a
+          href={site.phone.href}
+          class="mt-2 flex items-center gap-2.5 text-2xl font-extrabold hover:text-neon"
+          style="font-variation-settings:'wdth' 112"
+          data-track="call-devis"
+        >
+          <Icon name="phone" class="size-6 text-neon" />
+          {site.phone.display}
+        </a>
+        <p class="mt-3 text-sm text-white/60">{site.hours.label}</p>
+      </div>
+      <div class="rounded-xl p-7 ring-1 ring-line">
+        <p
+          class="flex items-center gap-2.5 font-extrabold text-gift uppercase"
+          style="font-variation-settings:'wdth' 110"
+        >
+          <Icon name="gift" class="size-6" />
+          {site.offer.headline}
+        </p>
+        <p class="mt-2 text-sm text-mute">{site.offer.conditions}</p>
+      </div>
+    </aside>
+  </section>
+</Base>
+
+<script>
+  import { bindPlates } from '@/scripts/plate';
+
+  // Champ « marque et modèle » manuel si la plaque n'est pas reconnue ou si le client corrige
+  const manual = document.querySelector<HTMLElement>('[data-manual]')!;
+  document.addEventListener('vehicle', (e) => {
+    const st = (e as CustomEvent<{ state: string }>).detail.state;
+    if (st === 'found' || st === 'loading') manual.hidden = true;
+    if (st === 'not_found' || st === 'unavailable') manual.hidden = false;
+  });
+  document.addEventListener('vehicle-rejected', () => (manual.hidden = false));
+
+  const form = document.querySelector<HTMLFormElement>('[data-quote-form]')!;
+  const services: Record<string, string> = JSON.parse(form.dataset.services!);
+  const whatsapp = form.dataset.whatsapp!;
+  const phone = form.dataset.phone!;
+  const status = form.querySelector<HTMLElement>('[data-status]')!;
+  const cp = form.querySelector<HTMLElement>('[data-cp]')!;
+  const endpoint = import.meta.env.PUBLIC_FORM_ENDPOINT as string | undefined;
+
+  // Pré-remplissage depuis l'URL (?immatriculation=…&prestation=…)
+  const params = new URLSearchParams(location.search);
+  const plate = params.get('immatriculation');
+  const presta = params.get('prestation');
+  if (plate)
+    (form.elements.namedItem('immatriculation') as HTMLInputElement).value = plate.toUpperCase();
+  if (presta && presta in services)
+    (form.elements.namedItem('prestation') as HTMLSelectElement).value = presta;
+
+  // Après le pré-remplissage : une plaque venant de l'accueil est identifiée tout de suite
+  bindPlates();
+
+  // Le code postal n'est utile que pour une intervention mobile
+  form.addEventListener('change', (e) => {
+    const t = e.target as HTMLInputElement;
+    if (t.name === 'lieu') cp.hidden = t.value === 'atelier';
+  });
+
+  const lieuLabel: Record<string, string> = {
+    atelier: "à l'atelier",
+    domicile: 'à domicile',
+    travail: 'sur mon lieu de travail',
+  };
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (!form.checkValidity()) {
+      form.reportValidity();
+      return;
+    }
+    const d = new FormData(form);
+    if (d.get('_gotcha')) return;
+
+    if (!endpoint) {
+      const label = services[String(d.get('prestation'))] ?? 'Autre / à définir';
+      const lines = [
+        'Bonjour, je souhaite un devis.',
+        `Immatriculation : ${d.get('immatriculation')}`,
+        (d.get('vehicule') || d.get('modele')) &&
+          `Véhicule : ${d.get('vehicule') || d.get('modele')}`,
+        `Prestation : ${label}`,
+        `Lieu : ${lieuLabel[String(d.get('lieu'))]}${d.get('code_postal') ? ` (${d.get('code_postal')})` : ''}`,
+        d.get('assureur') && `Assureur : ${d.get('assureur')}`,
+        `Nom : ${d.get('nom')}`,
+        `Tél : ${d.get('telephone')}`,
+        d.get('message') && `\n${d.get('message')}`,
+      ].filter(Boolean);
+      window.open(
+        `https://wa.me/${whatsapp}?text=${encodeURIComponent(lines.join('\n'))}`,
+        '_blank',
+        'noopener',
+      );
+      status.textContent =
+        'WhatsApp s’ouvre avec votre demande pré-remplie : il ne reste qu’à l’envoyer, avec une photo si vous le souhaitez.';
+      return;
+    }
+
+    const btn = form.querySelector<HTMLButtonElement>('button[type=submit]')!;
+    btn.disabled = true;
+    status.textContent = 'Envoi en cours…';
+    try {
+      const res = await fetch(endpoint, {
+        method: 'POST',
+        body: d,
+        headers: { Accept: 'application/json' },
+      });
+      if (!res.ok) throw new Error(String(res.status));
+      form.reset();
+      status.textContent = 'Merci, votre demande est bien partie. On vous rappelle rapidement.';
+      status.className = 'mt-4 text-[15px] font-semibold text-blue';
+    } catch {
+      status.textContent = `L’envoi n’a pas abouti. Appelez-nous directement au ${phone}.`;
+      status.className = 'mt-4 text-[15px] font-semibold text-gift';
+    } finally {
+      btn.disabled = false;
+    }
+  });
+</script>

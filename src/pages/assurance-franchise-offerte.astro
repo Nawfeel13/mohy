@@ -1,0 +1,141 @@
+---
+import Base from '@/layouts/Base.astro';
+import PageHero from '@/components/PageHero.astro';
+import Icon from '@/components/Icon.astro';
+import Steps from '@/components/Steps.astro';
+import InsurerWall from '@/components/InsurerWall.astro';
+import Faq from '@/components/Faq.astro';
+import CtaBand from '@/components/CtaBand.astro';
+import { site } from '@/config/site';
+
+const docs = [
+  'Votre carte grise (ou simplement l’immatriculation)',
+  'Le nom de votre assureur et votre numéro de contrat (sur la carte verte ou l’attestation)',
+  'En cas d’effraction : le récépissé de dépôt de plainte',
+];
+
+const faq = [
+  {
+    q: 'Comment savoir si j’ai la garantie bris de glace ?',
+    a: 'Elle figure dans les conditions particulières de votre contrat. Elle est presque toujours incluse dans les formules « tiers étendu » et « tous risques », rarement en « tiers simple ». Donnez-nous le nom de votre assureur : on vérifie avec vous.',
+  },
+  {
+    q: 'Le sinistre bris de glace fait-il augmenter mon bonus-malus ?',
+    a: "Non. Un bris de glace n'est pas un accident responsable : il n'a aucun effet sur votre coefficient bonus-malus.",
+  },
+  {
+    q: 'Et si je n’ai pas la garantie bris de glace ?',
+    a: 'On vous fait un devis direct, pièce et main-d’œuvre détaillées, avant toute commande. Pour un simple impact, la réparation coûte bien moins cher qu’un remplacement.',
+  },
+  {
+    q: 'Pourquoi offrir la franchise ?',
+    a: "Parce que c'est souvent elle qui fait hésiter à changer un pare-brise abîmé. Prendre en charge la franchise permet de rouler à nouveau avec un vitrage sain, sans reste à charge dans la majorité des cas.",
+  },
+];
+
+const schema = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faq.map((f) => ({
+      '@type': 'Question',
+      name: f.q,
+      acceptedAnswer: { '@type': 'Answer', text: f.a },
+    })),
+  },
+];
+---
+
+<Base
+  title="Bris de glace : prise en charge assurance et franchise offerte"
+  description={`Garantie bris de glace : on s'occupe de la déclaration, de la facture et de votre assureur. ${site.offer.headline}, libre choix du réparateur. Toutes assurances.`}
+  schema={schema}
+>
+  <PageHero
+    eyebrow="Assurance"
+    title="Votre assureur paie. On s’occupe du reste."
+    lead="Avec la garantie bris de glace, le remplacement de votre pare-brise est pris en charge par votre assurance. Nous facturons directement votre compagnie : vous n’avancez rien, et votre franchise vous est offerte jusqu’à 150 €."
+    crumbs={[{ label: 'Assurance & franchise offerte' }]}
+  />
+
+  <section class="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:py-20">
+    <div class="grid gap-8 lg:grid-cols-[1.2fr_1fr]">
+      <div class="rounded-xl border-2 border-gift/80 p-7 sm:p-9">
+        <Icon name="gift" class="size-12 text-gift" />
+        <h2 class="display mt-5 text-3xl text-gift sm:text-4xl">{site.offer.headline}</h2>
+        <div class="prose-pg mt-5 text-ink/80">
+          <p>
+            Votre contrat prévoit une franchise bris de glace ? Nous la prenons en charge, dans la
+            limite de {site.offer.amount} €.
+          </p>
+          <p>
+            Votre contrat n’a pas de franchise ? Vous bénéficiez de {site.offer.amount} € offerts.
+          </p>
+        </div>
+        <p class="mt-6 border-t border-line pt-5 text-sm text-mute">{site.offer.conditions}</p>
+      </div>
+      <div class="rounded-xl bg-paper p-7 sm:p-9">
+        <h2 class="text-xl font-bold text-navy">Ce qu’il nous faut</h2>
+        <ul class="mt-5 space-y-4">
+          {docs.map((d) => (
+            <li class="flex gap-3">
+              <Icon name="check" class="mt-1 size-5 shrink-0 text-blue" />
+              <span>{d}</span>
+            </li>
+          ))}
+        </ul>
+        <p class="mt-6 text-[15px] text-mute">
+          C’est tout. Pas de constat, pas d’expert, pas de formulaire à remplir de votre côté.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="bg-navy">
+    <div class="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:py-20">
+      <h2 class="display text-3xl text-white sm:text-4xl">Le déroulé</h2>
+      <div class="mt-10">
+        <Steps />
+      </div>
+    </div>
+  </section>
+
+  <section class="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:py-20">
+    <div class="grid gap-10 lg:grid-cols-[minmax(0,22rem)_1fr] lg:gap-20">
+      <div>
+        <p class="eyebrow">Libre choix</p>
+        <h2 class="display mt-4 text-3xl text-navy sm:text-4xl">
+          C’est vous qui choisissez votre réparateur
+        </h2>
+      </div>
+      <div class="prose-pg max-w-3xl text-[17px] text-ink/80">
+        <p>
+          La loi Hamon du 17 mars 2014 a inscrit dans le Code des assurances le libre choix du
+          réparateur par l’assuré. Votre assureur peut vous conseiller un centre de son réseau, il
+          doit vous informer de ce droit, mais il ne peut pas vous l’imposer ni réduire votre prise
+          en charge si vous allez ailleurs.
+        </p>
+        <p>
+          Concrètement : vous appelez votre assurance pour savoir si vous êtes couvert si vous le
+          souhaitez, puis vous venez chez nous. Ou vous nous appelez directement, et on fait la
+          vérification avec vous.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="border-t border-line">
+    <div class="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:py-20">
+      <InsurerWall />
+    </div>
+  </section>
+
+  <section class="bg-paper">
+    <div class="mx-auto grid max-w-7xl gap-10 px-4 py-16 sm:px-6 lg:grid-cols-[minmax(0,22rem)_1fr] lg:gap-20 lg:py-20">
+      <h2 class="display text-3xl text-navy">Questions sur l’assurance</h2>
+      <Faq items={faq} />
+    </div>
+  </section>
+
+  <CtaBand title="Vérifions votre couverture ensemble" />
+</Base>

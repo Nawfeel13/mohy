@@ -1,0 +1,342 @@
+---
+import { Image } from 'astro:assets';
+import Base from '@/layouts/Base.astro';
+import Icon from '@/components/Icon.astro';
+import PlateInput from '@/components/PlateInput.astro';
+import VehicleCard from '@/components/VehicleCard.astro';
+import ImpactCheck from '@/components/ImpactCheck.astro';
+import Steps from '@/components/Steps.astro';
+import InsurerWall from '@/components/InsurerWall.astro';
+import Faq from '@/components/Faq.astro';
+import CtaBand from '@/components/CtaBand.astro';
+import { site, fullAddress, mapsUrl, inCity } from '@/config/site';
+import { services } from '@/data/services';
+import facade from '@/assets/facade.jpg';
+import atelier from '@/assets/atelier.jpg';
+
+const faq = [
+  {
+    q: 'Combien de temps dure un remplacement de pare-brise ?',
+    a: "Comptez 1 h 30 à 2 h d'intervention, plus une heure de séchage avant de reprendre la route. Si un calibrage de caméra est nécessaire, ajoutez 30 à 45 minutes.",
+  },
+  {
+    q: 'Je dois avancer les frais ?',
+    a: "Non dans la plupart des cas : si vous avez la garantie bris de glace, nous facturons directement votre assureur. Seule une éventuelle franchise reste due, et c'est elle que notre offre prend en charge jusqu'à 150 €.",
+  },
+  {
+    q: 'Mon assureur m’oriente vers un autre centre. Je peux venir chez vous ?',
+    a: "Oui. Depuis la loi Hamon de 2014, vous choisissez librement votre réparateur. Votre assureur peut vous recommander son réseau, il ne peut pas vous l'imposer.",
+  },
+  {
+    q: 'Vous vous déplacez où ?',
+    a: `À votre domicile ou sur votre lieu de travail${site.serviceArea.length ? `, notamment à ${site.serviceArea.join(', ')}` : ''}. Il faut simplement un emplacement plat et, idéalement, un abri en cas de pluie. Appelez-nous pour vérifier votre secteur.`,
+  },
+  {
+    q: 'Un impact sur le pare-brise, c’est grave au contrôle technique ?',
+    a: 'Un impact ou une fissure dans le champ de vision du conducteur est une défaillance majeure : contre-visite obligatoire. Mieux vaut le traiter avant le rendez-vous.',
+  },
+];
+
+const faqSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faq.map((f) => ({
+    '@type': 'Question',
+    name: f.q,
+    acceptedAnswer: { '@type': 'Answer', text: f.a },
+  })),
+};
+---
+
+<Base
+  title={`Pare-brise${inCity} : remplacement, réparation, franchise offerte | ${site.name}`}
+  description={`Remplacement et réparation de pare-brise, vitrage auto et calibrage ADAS${inCity}. À l'atelier ou à domicile, toutes assurances, franchise ou 150 € offerts. ☎ ${site.phone.display}`}
+  schema={[faqSchema]}
+>
+  <!-- HERO -->
+  <section class="relative isolate overflow-hidden bg-ink text-white">
+    <div class="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(70rem_30rem_at_75%_0%,rgb(35_135_240/0.25),transparent_70%)]"></div>
+    <div class="mx-auto grid max-w-7xl gap-12 px-4 pt-10 pb-16 sm:px-6 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,1fr)] lg:items-center lg:gap-14 lg:pt-16 lg:pb-24">
+      <div>
+        <p class="eyebrow !text-neon">Vitrage automobile{inCity}</p>
+        <h1 class="display mt-5 text-[2.2rem] leading-[0.98] min-[400px]:text-[2.65rem] sm:text-[4.1rem]">
+          Pare-brise
+          <br />
+          remplacé.
+          <br />
+          <span class="text-neon">Franchise</span> offerte.
+        </h1>
+        <p class="mt-6 max-w-xl text-lg text-white/75">
+          Remplacement, réparation d’impact et calibrage ADAS, à l’atelier ou là où est garée votre
+          voiture. On gère votre assurance de A à Z.
+        </p>
+
+        <form action="/devis" method="get" class="mt-9 max-w-lg" data-hero-form>
+          <label for="hero-plate" class="text-sm font-semibold text-white/80">
+            Devis gratuit en entrant votre plaque
+          </label>
+          <div class="mt-2.5 grid gap-2.5 sm:grid-cols-[1fr_auto]">
+            <PlateInput id="hero-plate" size="lg" />
+            <button type="submit" class="btn btn-primary h-16 px-6 text-base">
+              Continuer <Icon name="arrow" class="size-4" />
+            </button>
+          </div>
+          <VehicleCard for="hero-plate" tone="dark" class="mt-3" />
+        </form>
+
+        <p class="mt-6 flex flex-wrap items-center gap-x-5 gap-y-2 text-[15px] text-white/65">
+          <span>ou appelez le</span>
+          <a
+            href={site.phone.href}
+            class="inline-flex items-center gap-2 text-xl font-extrabold text-white hover:text-neon"
+            style="font-variation-settings:'wdth' 112"
+            data-track="call-hero"
+          >
+            <Icon name="phone" class="size-5 text-neon" />
+            {site.phone.display}
+          </a>
+        </p>
+      </div>
+
+      <figure class="relative">
+        <div class="relative overflow-hidden rounded-xl ring-1 ring-neon/40 shadow-[0_0_0_6px_rgb(10_13_20),0_0_60px_-10px_rgb(72_176_255/0.55)]">
+          <Image
+            src={facade}
+            alt="L'atelier Pareglass Auto : enseigne lumineuse bleue, caissons des prestations et garage ouvert au sol bleu"
+            widths={[480, 760, 1170]}
+            sizes="(min-width: 1024px) 50vw, 100vw"
+            loading="eager"
+            fetchpriority="high"
+            class="aspect-[1170/687] w-full object-cover"
+          />
+        </div>
+        <figcaption class="absolute -bottom-5 left-5 flex items-center gap-3 rounded-lg bg-white px-4 py-3 text-ink shadow-xl sm:left-auto sm:-right-3">
+          <Icon name="gift" class="size-8 shrink-0 text-gift" />
+          <span class="leading-tight">
+            <span
+              class="block text-[15px] font-extrabold tracking-wide text-gift uppercase"
+              style="font-variation-settings:'wdth' 110"
+            >
+              {site.offer.headline}
+            </span>
+            <span class="text-[13px] text-mute">avec la garantie bris de glace</span>
+          </span>
+        </figcaption>
+      </figure>
+    </div>
+
+    <div class="border-t border-white/10">
+      <ul class="mx-auto grid max-w-7xl grid-cols-1 divide-white/10 px-4 text-[15px] sm:grid-cols-3 sm:divide-x sm:px-6">
+        <li class="flex items-center gap-3 py-4 sm:pr-6">
+          <Icon name="clock" class="size-6 text-neon" />{' '}
+          <span>
+            <strong class="text-white">{site.hours.short}</strong>{' '}
+            <span class="text-white/55">atelier ouvert</span>
+          </span>
+        </li>
+        <li class="flex items-center gap-3 border-t border-white/10 py-4 sm:border-t-0 sm:px-6">
+          <Icon name="van" class="size-6 text-neon" />{' '}
+          <span>
+            <strong class="text-white">À domicile</strong>{' '}
+            <span class="text-white/55">ou au travail</span>
+          </span>
+        </li>
+        <li class="flex items-center gap-3 border-t border-white/10 py-4 sm:border-t-0 sm:pl-6">
+          <Icon name="shield" class="size-6 text-neon" />{' '}
+          <span>
+            <strong class="text-white">Toutes assurances</strong>{' '}
+            <span class="text-white/55">démarches incluses</span>
+          </span>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- PRESTATIONS -->
+  <section class="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:py-28" aria-labelledby="t-prestations">
+    <div class="grid gap-12 lg:grid-cols-[minmax(0,22rem)_1fr] lg:gap-20">
+      <div class="lg:sticky lg:top-32 lg:self-start">
+        <p class="eyebrow">Prestations</p>
+        <h2
+          id="t-prestations"
+          class="display mt-4 text-[2rem] text-navy min-[400px]:text-4xl sm:text-5xl"
+        >
+          Tout le vitrage de votre voiture
+        </h2>
+        <p class="mt-5 text-mute">
+          Du simple éclat de gravillon au toit panoramique. On commande la pièce à partir de votre
+          immatriculation, pour qu’elle soit la bonne du premier coup.
+        </p>
+      </div>
+      <ul class="border-t border-line">
+        {services.map((s, i) => (
+          <li class="border-b border-line">
+            <a
+              href={`/${s.slug}`}
+              class="group grid grid-cols-[auto_1fr_auto] items-center gap-5 py-7 sm:gap-8"
+            >
+              <span class="grid size-16 place-items-center rounded-lg bg-paper text-navy transition-colors group-hover:bg-navy group-hover:text-white sm:size-20">
+                <Icon name={s.icon} class="size-9 sm:size-11" />
+              </span>
+              <span>
+                <span class="flex items-baseline gap-3">
+                  <span class="text-xs font-bold text-blue tabular-nums">0{i + 1}</span>
+                  <span class="display text-xl text-navy group-hover:text-blue sm:text-2xl">
+                    {s.label}
+                  </span>
+                </span>
+                <span class="mt-1.5 block text-[15px] text-mute">{s.teaser}</span>
+              </span>
+              <Icon
+                name="arrow"
+                class="size-6 text-navy/30 transition group-hover:translate-x-1 group-hover:text-blue"
+              />
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <!-- DIAGNOSTIC -->
+  <section class="bg-paper" aria-labelledby="t-diag">
+    <div class="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:py-24">
+      <div class="max-w-2xl">
+        <p class="eyebrow">Diagnostic express</p>
+        <h2 id="t-diag" class="display mt-4 text-4xl text-navy sm:text-5xl">
+          Réparer ou remplacer ?
+        </h2>
+        <p class="mt-5 text-mute">
+          Trois questions, la même grille que celle qu’on applique à l’atelier.
+        </p>
+      </div>
+      <div class="mt-12">
+        <ImpactCheck />
+      </div>
+    </div>
+  </section>
+
+  <!-- OFFRE + DÉROULÉ -->
+  <section class="bg-navy text-white" aria-labelledby="t-offre">
+    <div class="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:py-24">
+      <div class="grid gap-10 lg:grid-cols-[1fr_auto] lg:items-end">
+        <div class="max-w-2xl">
+          <p class="eyebrow !text-neon">Assurance</p>
+          <h2 id="t-offre" class="display mt-4 text-4xl sm:text-5xl">
+            Vous n’avez qu’à nous donner votre numéro de contrat
+          </h2>
+        </div>
+        <a
+          href="/assurance-franchise-offerte"
+          class="btn btn-ghost-dark self-start whitespace-normal lg:self-auto"
+        >
+          Comment fonctionne la prise en charge <Icon name="arrow" class="size-4" />
+        </a>
+      </div>
+      <div class="mt-12">
+        <Steps />
+      </div>
+      <div class="mt-6 flex flex-col gap-4 rounded-xl bg-white p-6 text-ink sm:flex-row sm:items-center sm:gap-6 sm:p-7">
+        <Icon name="gift" class="size-12 shrink-0 text-gift" />
+        <div class="flex-1">
+          <p class="display text-2xl text-gift">{site.offer.headline}</p>
+          <p class="mt-1 text-[15px] text-mute">{site.offer.conditions}</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ASSUREURS / MARQUES -->
+  <section class="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:py-24" aria-label="Assurances et marques">
+    <InsurerWall />
+  </section>
+
+  <!-- ATELIER + DOMICILE -->
+  <section id="atelier" class="bg-ink text-white" aria-labelledby="t-atelier">
+    <div class="mx-auto grid max-w-7xl gap-12 px-4 py-20 sm:px-6 lg:grid-cols-2 lg:gap-16 lg:py-24">
+      <div class="relative">
+        <Image
+          src={atelier}
+          alt="Intérieur de l'atelier : sol époxy bleu, éclairage LED hexagonal au plafond"
+          widths={[400, 540]}
+          sizes="(min-width: 1024px) 40vw, 100vw"
+          class="aspect-[6/5] w-full rounded-xl object-cover ring-1 ring-white/10"
+        />
+      </div>
+      <div class="flex flex-col justify-center">
+        <p class="eyebrow !text-neon">L’atelier</p>
+        <h2 id="t-atelier" class="display mt-4 text-4xl sm:text-5xl">
+          Un atelier propre, éclairé, à l’abri
+        </h2>
+        <p class="mt-5 text-white/70">
+          La colle des pare-brise prend mieux à l’abri du vent et de la poussière. C’est pour ça
+          qu’on recommande l’atelier quand c’est possible, et qu’on se déplace quand ça ne l’est
+          pas.
+        </p>
+        <dl class="mt-8 grid gap-px overflow-hidden rounded-lg bg-white/10 sm:grid-cols-2">
+          <div class="bg-ink-2 p-5">
+            <dt class="text-sm text-white/50">Horaires</dt>
+            <dd class="mt-1 font-bold">{site.hours.label}</dd>
+          </div>
+          <div class="bg-ink-2 p-5">
+            <dt class="text-sm text-white/50">Téléphone</dt>
+            <dd class="mt-1 font-bold">
+              <a href={site.phone.href} class="hover:text-neon">
+                {site.phone.display}
+              </a>
+            </dd>
+          </div>
+          {fullAddress && (
+            <div class="bg-ink-2 p-5 sm:col-span-2">
+              <dt class="text-sm text-white/50">Adresse</dt>
+              <dd class="mt-1 flex flex-wrap items-center justify-between gap-3 font-bold">
+                {fullAddress}
+                <a
+                  href={mapsUrl}
+                  target="_blank"
+                  rel="noopener"
+                  class="inline-flex items-center gap-1.5 text-sm text-neon"
+                >
+                  <Icon name="pin" class="size-4" /> Itinéraire
+                </a>
+              </dd>
+            </div>
+          )}
+        </dl>
+        <a
+          href="/intervention-a-domicile"
+          class="mt-8 flex items-center gap-4 rounded-lg p-4 ring-1 ring-white/15 transition hover:bg-white/5 hover:ring-neon/60"
+        >
+          <Icon name="van" class="size-10 shrink-0 text-neon" />
+          <span class="flex-1">
+            <span class="block font-bold">Pas le temps de passer ?</span>
+            <span class="block text-sm text-white/60">
+              On vient chez vous ou sur votre lieu de travail.
+            </span>
+          </span>
+          <Icon name="arrow" class="size-5 text-white/50" />
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:py-24" aria-labelledby="t-faq">
+    <div class="grid gap-10 lg:grid-cols-[minmax(0,22rem)_1fr] lg:gap-20">
+      <div>
+        <p class="eyebrow">Questions fréquentes</p>
+        <h2 id="t-faq" class="display mt-4 text-4xl text-navy">
+          Ce qu’on nous demande au téléphone
+        </h2>
+      </div>
+      <Faq items={faq} />
+    </div>
+  </section>
+
+  <CtaBand />
+</Base>
+
+<script>
+  import { bindPlates } from '@/scripts/plate';
+  bindPlates();
+</script>

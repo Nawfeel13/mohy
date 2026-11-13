@@ -1,0 +1,39 @@
+---
+interface Props {
+  tone?: 'dark' | 'light';
+}
+const { tone = 'dark' } = Astro.props;
+const dark = tone === 'dark';
+const steps = [
+  {
+    t: 'Vous appelez ou envoyez une photo',
+    d: 'Avec votre immatriculation, on identifie la référence exacte du vitrage et on vous propose le premier créneau disponible.',
+  },
+  {
+    t: 'On s’occupe de votre assureur',
+    d: 'Vous nous indiquez votre compagnie et votre numéro de contrat. Déclaration, photos, facture : on transmet tout.',
+  },
+  {
+    t: 'Intervention à l’atelier ou chez vous',
+    d: 'Pose, calibrage si nécessaire, contrôle. Vous signez, vous repartez. Pas d’avance de frais dans la plupart des cas.',
+  },
+];
+---
+
+<ol
+  class="grid gap-px overflow-hidden rounded-xl md:grid-cols-3"
+  class:list={[dark ? 'bg-white/10' : 'bg-line']}
+>
+  {steps.map((s, i) => (
+    <li class:list={['p-7', dark ? 'bg-navy-2' : 'bg-white']}>
+      <span
+        class:list={['display block text-5xl', dark ? 'text-neon' : 'text-blue']}
+        aria-hidden="true"
+      >
+        {i + 1}
+      </span>
+      <h3 class:list={['mt-4 text-lg font-bold', dark ? 'text-white' : 'text-navy']}>{s.t}</h3>
+      <p class:list={['mt-2 text-[15px]', dark ? 'text-white/70' : 'text-mute']}>{s.d}</p>
+    </li>
+  ))}
+</ol>

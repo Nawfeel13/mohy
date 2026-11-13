@@ -1,0 +1,103 @@
+---
+import Logo from './Logo.astro';
+import Icon from './Icon.astro';
+import { site, fullAddress, mapsUrl, insurers } from '@/config/site';
+import { services } from '@/data/services';
+
+const year = new Date().getFullYear();
+---
+
+<footer class="bg-ink text-white/70">
+  <div class="neon-rule mx-auto max-w-7xl opacity-80"></div>
+  <div class="mx-auto grid max-w-7xl gap-12 px-4 py-14 sm:px-6 md:grid-cols-2 lg:grid-cols-[1.3fr_1fr_1fr_1fr]">
+    <div>
+      <Logo on="dark" />
+      <p class="mt-5 max-w-xs text-[15px]">
+        Remplacement et réparation de vitrage automobile, calibrage ADAS. À l’atelier ou chez vous.
+      </p>
+      <a
+        href={site.phone.href}
+        class="mt-6 inline-flex items-center gap-2.5 text-2xl font-extrabold text-white hover:text-neon"
+        style="font-variation-settings:'wdth' 112"
+      >
+        <Icon name="phone" class="size-6 text-neon" />
+        {site.phone.display}
+      </a>
+    </div>
+
+    <div>
+      <h2 class="text-sm font-bold tracking-widest text-white uppercase">Prestations</h2>
+      <ul class="mt-4 space-y-2.5 text-[15px]">
+        {services.map((s) => (
+          <li>
+            <a href={`/${s.slug}`} class="hover:text-white">
+              {s.label}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
+
+    <div>
+      <h2 class="text-sm font-bold tracking-widest text-white uppercase">Infos pratiques</h2>
+      <ul class="mt-4 space-y-2.5 text-[15px]">
+        <li>
+          <a href="/assurance-franchise-offerte" class="hover:text-white">
+            Assurance & franchise offerte
+          </a>
+        </li>
+        <li>
+          <a href="/intervention-a-domicile" class="hover:text-white">
+            Intervention à domicile
+          </a>
+        </li>
+        <li>
+          <a href="/devis" class="hover:text-white">
+            Demande de devis
+          </a>
+        </li>
+        <li>
+          <a href="/mentions-legales" class="hover:text-white">
+            Mentions légales
+          </a>
+        </li>
+        <li>
+          <a href="/confidentialite" class="hover:text-white">
+            Confidentialité
+          </a>
+        </li>
+      </ul>
+    </div>
+
+    <div>
+      <h2 class="text-sm font-bold tracking-widest text-white uppercase">L’atelier</h2>
+      <dl class="mt-4 space-y-3 text-[15px]">
+        <div>
+          <dt class="sr-only">Horaires</dt>
+          <dd>{site.hours.label}</dd>
+        </div>
+        {fullAddress && (
+          <div>
+            <dt class="sr-only">Adresse</dt>
+            <dd>
+              <a href={mapsUrl} class="hover:text-white" target="_blank" rel="noopener">
+                {fullAddress}
+              </a>
+            </dd>
+          </div>
+        )}
+        <div>
+          <dt class="sr-only">Assurances</dt>
+          <dd class="text-white/50">
+            Toutes assurances acceptées : {insurers.slice(0, 8).join(', ')}…
+          </dd>
+        </div>
+      </dl>
+    </div>
+  </div>
+  <div class="border-t border-white/8">
+    <p class="mx-auto max-w-7xl px-4 py-5 text-[13px] text-white/45 sm:px-6">
+      © {year} {site.legalName}. {site.offer.headline} : offre soumise à conditions.
+    </p>
+  </div>
+</footer>

@@ -1,0 +1,39 @@
+---
+import LogoMark from './LogoMark.astro';
+
+interface Props {
+  /** Couleur du fond sur lequel le logo est posé */
+  on?: 'dark' | 'light';
+  class?: string;
+}
+const { on = 'dark', class: className = '' } = Astro.props;
+const dark = on === 'dark';
+---
+
+<span class:list={['inline-flex items-center gap-2.5 select-none', className]}>
+  <LogoMark tone={dark ? 'sign' : 'print'} class="h-9 w-auto shrink-0 sm:h-10" />
+  <span class="flex flex-col leading-none">
+    <span
+      class:list={[
+        'text-[1.32rem] font-black tracking-[-0.01em] sm:text-[1.5rem]',
+        dark ? 'text-white' : 'text-ink',
+      ]}
+      style="font-variation-settings: 'wdth' 118"
+    >
+      PAREGLASS
+    </span>
+    <span class="mt-[3px] flex items-center gap-1.5">
+      <span class:list={['h-[2.5px] flex-1 rounded-full', dark ? 'bg-neon' : 'bg-blue']}></span>
+      <span
+        class:list={[
+          'text-[0.72rem] font-black tracking-[0.08em]',
+          dark ? 'text-neon' : 'text-blue',
+        ]}
+        style="font-variation-settings: 'wdth' 118"
+      >
+        AUTO
+      </span>
+      <span class:list={['h-[2.5px] flex-1 rounded-full', dark ? 'bg-neon' : 'bg-blue']}></span>
+    </span>
+  </span>
+</span>

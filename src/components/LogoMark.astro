@@ -1,0 +1,46 @@
+---
+/**
+ * Pictogramme Pareglass : pare-brise à double contour (bleu clair + marine),
+ * reflet incurvé et étoile à quatre branches. Redessiné en vectoriel d'après l'enseigne.
+ */
+interface Props {
+  class?: string;
+  /** « sign » = version néon de la façade (fond sombre), « print » = version caisson (fond clair) */
+  tone?: 'sign' | 'print';
+  title?: string;
+}
+const { class: className = '', tone = 'print', title } = Astro.props;
+const outer =
+  'M24 7 H94 Q99 7 101.5 10.5 L117 33 Q119 36 117.5 39.5 L108 63 Q106.5 66.5 102.5 66 Q60 59 15 66 Q10.5 66.6 9.6 62 L4.3 38 Q3.6 35 5.4 32.4 L19.5 9.8 Q21.5 7 24 7 Z';
+const inner =
+  'M27.5 13.5 H91 Q94 13.5 95.6 15.8 L109.4 35.6 Q110.6 37.4 109.8 39.4 L102.2 58 Q101.2 60.2 98.6 59.8 Q60 54.2 19.3 59.8 Q16.4 60.2 15.8 57.3 L11.4 37.6 Q11 35.8 12 34.2 L24.4 15.4 Q25.6 13.5 27.5 13.5 Z';
+const swoosh = 'M17 55 C27 36 44 22 79 17.5 L80.5 21 C52 25.5 34 38 23.5 56.5 Z';
+const star =
+  'M76 23 C77.2 32 78.4 35.2 89 38 C78.4 40.8 77.2 44 76 53 C74.8 44 73.6 40.8 63 38 C73.6 35.2 74.8 32 76 23 Z';
+const isSign = tone === 'sign';
+---
+
+<svg
+  viewBox="0 0 122 72"
+  class={className}
+  role={title ? 'img' : undefined}
+  aria-hidden={title ? undefined : 'true'}
+  aria-label={title}
+  fill="none"
+>
+  {isSign ? (
+    <>
+      <path d={outer} stroke="#48b0ff" stroke-width="3.2" stroke-linejoin="round" />
+      <path d={swoosh} fill="#48b0ff" />
+      <path d={star} fill="#fff" />
+    </>
+  ) : (
+    <>
+      <path d={outer} fill="#48b0ff" />
+      <path d={inner} fill="#fff" />
+      <path d={inner} stroke="#1f2a80" stroke-width="2" stroke-linejoin="round" />
+      <path d={swoosh} fill="#1f2a80" />
+      <path d={star} fill="#1f2a80" />
+    </>
+  )}
+</svg>

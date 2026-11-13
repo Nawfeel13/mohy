@@ -1,0 +1,14 @@
+---
+import Icon from './Icon.astro';
+import { site } from '@/config/site';
+---
+
+<div class="fixed inset-x-0 bottom-0 z-40 grid grid-cols-[1fr_auto] gap-2 border-t border-white/10 bg-ink/95 p-2.5 pb-[max(0.625rem,env(safe-area-inset-bottom))] backdrop-blur lg:hidden">
+  <a href={site.phone.href} class="btn btn-primary w-full text-base" data-track="call-bar">
+    <Icon name="phone" class="size-5" />
+    Appeler · {site.phone.display}
+  </a>
+  <a href="/devis" class="btn btn-ghost-dark px-4">
+    Devis
+  </a>
+</div>

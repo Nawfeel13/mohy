@@ -1,0 +1,187 @@
+---
+/**
+ * Affiche le véhicule identifié à partir du champ plaque `for`.
+ * Si la carte est dans un formulaire, elle remplit le champ caché name="vehicule".
+ */
+import Icon from './Icon.astro';
+
+interface Props {
+  for: string;
+  tone?: 'dark' | 'light';
+  class?: string;
+}
+const { for: inputId, tone = 'light', class: className = '' } = Astro.props;
+const dark = tone === 'dark';
+---
+
+<div
+  class:list={['vehicle-card', className]}
+  data-vehicle-card
+  data-for={inputId}
+  aria-live="polite"
+  hidden
+>
+  <div data-v="loading" hidden>
+    <div
+      class:list={[
+        'flex items-center gap-3 rounded-lg px-4 py-3.5 text-[15px]',
+        dark ? 'bg-white/6 text-white/70' : 'bg-paper text-mute',
+      ]}
+    >
+      <span class="size-4 animate-spin rounded-full border-2 border-current border-r-transparent"></span>
+      Recherche du véhicule…
+    </div>
+  </div>
+
+  <div data-v="found" hidden>
+    <div
+      class:list={[
+        'relative overflow-hidden rounded-lg p-4 sm:p-5',
+        dark ? 'bg-white text-ink' : 'bg-white text-ink ring-1 ring-line',
+      ]}
+    >
+      <div class="absolute inset-y-0 left-0 w-1 bg-blue"></div>
+      <div class="flex items-start gap-4">
+        <span class="grid size-12 shrink-0 place-items-center rounded-md bg-paper text-navy">
+          <Icon name="car" class="size-8" />
+        </span>
+        <div class="min-w-0 flex-1">
+          <p
+            class="flex items-center gap-1.5 text-xs font-bold tracking-widest text-blue uppercase"
+            data-f="ok"
+          >
+            <Icon name="check" class="size-3.5" /> Véhicule identifié
+          </p>
+          <p
+            class="hidden rounded bg-[#fff4d6] px-2 py-1 text-xs font-bold text-[#7a4b00]"
+            data-f="demo"
+          >
+            Mode démo : véhicule fictif, sans lien avec votre plaque
+          </p>
+          <p class="display mt-1 text-xl leading-tight text-navy sm:text-2xl">
+            <span data-f="make"></span>
+            <span data-f="model"></span>
+          </p>
+          <p class="mt-0.5 truncate text-[15px] text-mute" data-f="version"></p>
+        </div>
+      </div>
+      <ul class="mt-4 flex flex-wrap gap-1.5 text-[13px] font-semibold" data-f="chips"></ul>
+      <p class="mt-3 hidden text-[13px] text-mute" data-f="adas">
+        Les modèles de cette génération ont souvent une caméra derrière le pare-brise : on vérifie
+        si un calibrage ADAS est nécessaire.
+      </p>
+      <button
+        type="button"
+        class="mt-3 text-[13px] font-semibold text-mute underline underline-offset-2 hover:text-ink"
+        data-reject
+      >
+        Ce n’est pas mon véhicule
+      </button>
+    </div>
+  </div>
+
+  <div data-v="not_found" hidden>
+    <p
+      class:list={[
+        'rounded-lg px-4 py-3.5 text-[15px]',
+        dark ? 'bg-white/6 text-white/75' : 'bg-paper text-mute',
+      ]}
+    >
+      Plaque introuvable. Vérifiez-la, ou continuez : on identifiera le véhicule avec vous.
+    </p>
+  </div>
+</div>
+
+<script>
+  import type { VehicleState } from '@/scripts/plate';
+  import type { Vehicle } from '@/lib/vehicle/types';
+
+  const MONTHS = [
+    'janv.',
+    'févr.',
+    'mars',
+    'avr.',
+    'mai',
+    'juin',
+    'juil.',
+    'août',
+    'sept.',
+    'oct.',
+    'nov.',
+    'déc.',
+  ];
+
+  function chips(v: Vehicle) {
+    const out: string[] = [];
+    if (v.firstRegistration) {
+      const [y, m] = v.firstRegistration.split('-');
+      out.push(`${MONTHS[Number(m) - 1]} ${y}`);
+    }
+    if (v.fuel) out.push(v.fuel);
+    if (v.body) out.push(v.doors ? `${v.body} ${v.doors} portes` : v.body);
+    if (v.gearbox) out.push(v.gearbox);
+    if (v.fiscalPower) out.push(`${v.fiscalPower} CV`);
+    return out;
+  }
+
+  const summary = (v: Vehicle) =>
+    [`${v.make} ${v.model}`, v.version, v.firstRegistration?.slice(0, 4), v.fuel]
+      .filter(Boolean)
+      .join(' · ');
+
+  document.querySelectorAll<HTMLElement>('[data-vehicle-card]').forEach((card) => {
+    const input = document.getElementById(card.dataset.for!) as HTMLInputElement | null;
+    if (!input) return;
+    const hidden = card.closest('form')?.querySelector<HTMLInputElement>('input[name="vehicule"]');
+    const f = (k: string) => card.querySelector<HTMLElement>(`[data-f="${k}"]`)!;
+
+    const show = (name: string | null) => {
+      card.hidden = name === null;
+      card
+        .querySelectorAll<HTMLElement>('[data-v]')
+        .forEach((el) => (el.hidden = el.dataset.v !== name));
+    };
+
+    input.addEventListener('vehicle', (e) => {
+      const s = (e as CustomEvent<VehicleState>).detail;
+      if (hidden) hidden.value = '';
+      switch (s.state) {
+        case 'loading':
+          return show('loading');
+        case 'not_found':
+          return show('not_found');
+        case 'found': {
+          const v = s.vehicle;
+          f('make').textContent = v.make;
+          f('model').textContent = v.model;
+          f('version').textContent = v.version ?? '';
+          f('chips').replaceChildren(
+            ...chips(v).map((c) => {
+              const li = document.createElement('li');
+              li.className = 'rounded bg-paper px-2 py-1 text-navy';
+              li.textContent = c;
+              return li;
+            }),
+          );
+          const year = Number(v.firstRegistration?.slice(0, 4));
+          f('adas').classList.toggle('hidden', !(year >= 2016));
+          f('ok').classList.toggle('hidden', s.demo);
+          f('demo').classList.toggle('hidden', !s.demo);
+          // Une fiche fictive ne part jamais avec la demande de devis
+          if (hidden) hidden.value = s.demo ? '' : summary(v);
+          return show('found');
+        }
+        default:
+          return show(null);
+      }
+    });
+
+    card.querySelector('[data-reject]')?.addEventListener('click', () => {
+      if (hidden) hidden.value = '';
+      show(null);
+      card.dispatchEvent(new CustomEvent('vehicle-rejected', { bubbles: true }));
+      input.focus();
+      input.select();
+    });
+  });
+</script>

@@ -1,0 +1,140 @@
+---
+import Icon from './Icon.astro';
+import { site } from '@/config/site';
+
+const questions = [
+  {
+    name: 'type',
+    label: 'Qu’est-ce que vous voyez ?',
+    options: [
+      { v: 'impact', t: 'Un impact (éclat en étoile ou en œil de bœuf)' },
+      { v: 'fissure', t: 'Une fissure (une ligne qui s’étend)' },
+    ],
+  },
+  {
+    name: 'taille',
+    label: 'Sa taille ?',
+    options: [
+      { v: 'petit', t: 'Plus petit qu’une pièce de 2 €' },
+      { v: 'grand', t: 'Plus grand' },
+    ],
+  },
+  {
+    name: 'zone',
+    label: 'Où se trouve-t-il ?',
+    options: [
+      { v: 'ailleurs', t: 'Côté passager ou en haut' },
+      { v: 'vision', t: 'Face au conducteur' },
+      { v: 'bord', t: 'À moins de 5 cm du bord' },
+    ],
+  },
+];
+---
+
+<div class="grid gap-10 lg:grid-cols-[1fr_minmax(0,25rem)] lg:gap-16" data-impact-check>
+  <form class="space-y-8" aria-describedby="diag-result">
+    {questions.map((q, i) => (
+      <fieldset data-q={q.name} class:list={[i > 0 && 'transition-opacity']}>
+        <legend class="mb-3 flex items-baseline gap-3 font-bold text-navy">
+          <span class="text-sm text-blue tabular-nums">0{i + 1}</span>
+          {q.label}
+        </legend>
+        <div class="flex flex-wrap gap-2">
+          {q.options.map((o) => (
+            <label class="cursor-pointer">
+              <input type="radio" name={q.name} value={o.v} class="peer sr-only" />
+              <span class="block rounded-md bg-white px-4 py-3 text-[15px] font-medium ring-1 ring-line transition peer-checked:bg-navy peer-checked:text-white peer-checked:ring-navy peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-blue hover:ring-navy/40">
+                {o.t}
+              </span>
+            </label>
+          ))}
+        </div>
+      </fieldset>
+    ))}
+  </form>
+
+  <div
+    id="diag-result"
+    class="relative self-start overflow-hidden rounded-xl bg-ink p-7 text-white lg:sticky lg:top-28"
+    aria-live="polite"
+  >
+    <div class="neon-rule absolute inset-x-7 top-0"></div>
+    <div data-state="idle">
+      <p class="text-sm font-semibold tracking-widest text-white/50 uppercase">Verdict</p>
+      <p class="mt-3 text-lg text-white/80">
+        Répondez aux trois questions, on vous dit tout de suite ce qu’il faut faire.
+      </p>
+    </div>
+    <div data-state="repair" hidden>
+      <p class="text-sm font-semibold tracking-widest text-neon uppercase">Réparable</p>
+      <p class="display mt-2 text-3xl">Réparation d’impact</p>
+      <p class="mt-3 text-white/75">
+        Environ 30 minutes, et la plupart des assureurs la prennent en charge sans franchise. Ne
+        tardez pas : un impact peut filer au premier écart de température.
+      </p>
+      <a href="/devis?prestation=reparation-impact" class="btn btn-primary mt-6 w-full">
+        Prendre rendez-vous <Icon name="arrow" class="size-4" />
+      </a>
+    </div>
+    <div data-state="replace" hidden>
+      <p class="text-sm font-semibold tracking-widest text-[#ff7b80] uppercase">À remplacer</p>
+      <p class="display mt-2 text-3xl">Remplacement du pare-brise</p>
+      <p class="mt-3 text-white/75" data-reason></p>
+      <p class="mt-3 text-white/75">
+        Avec la garantie bris de glace : {site.offer.headline.toLowerCase()}.
+      </p>
+      <a href="/devis?prestation=remplacement-pare-brise" class="btn btn-primary mt-6 w-full">
+        Demander un devis <Icon name="arrow" class="size-4" />
+      </a>
+    </div>
+    <p class="mt-6 border-t border-white/10 pt-5 text-sm text-white/55">
+      Un doute ? Envoyez une photo sur WhatsApp au{' '}
+      <a
+        class="font-semibold text-white underline underline-offset-2"
+        href={`https://wa.me/${site.phone.whatsapp}`}
+      >
+        {site.phone.display}
+      </a>
+      .
+    </p>
+  </div>
+</div>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-impact-check]').forEach((root) => {
+    const form = root.querySelector('form')!;
+    const states = root.querySelectorAll<HTMLElement>('[data-state]');
+    const reason = root.querySelector<HTMLElement>('[data-reason]')!;
+    const show = (s: string) => states.forEach((el) => (el.hidden = el.dataset.state !== s));
+
+    form.addEventListener('change', () => {
+      const d = new FormData(form);
+      const type = d.get('type');
+      const taille = d.get('taille');
+      const zone = d.get('zone');
+
+      if (type === 'fissure') {
+        reason.textContent =
+          'Une fissure ne se répare pas : elle continue de s’étendre et entraîne une contre-visite au contrôle technique.';
+        return show('replace');
+      }
+      if (taille === 'grand') {
+        reason.textContent =
+          'Au-delà de la taille d’une pièce de 2 €, la résine ne suffit plus à rendre sa solidité au verre.';
+        return show('replace');
+      }
+      if (zone === 'vision') {
+        reason.textContent =
+          'Face au conducteur, même réparé, l’impact laisse une trace qui gêne la vision : la réglementation impose le remplacement.';
+        return show('replace');
+      }
+      if (zone === 'bord') {
+        reason.textContent =
+          'Près du bord, le verre travaille avec la carrosserie : une réparation ne tiendrait pas.';
+        return show('replace');
+      }
+      if (type && taille && zone) return show('repair');
+      show('idle');
+    });
+  });
+</script>

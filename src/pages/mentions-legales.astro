@@ -1,0 +1,44 @@
+---
+import LegalPage from '@/components/LegalPage.astro';
+import { site, fullAddress } from '@/config/site';
+---
+
+<LegalPage title="Mentions légales" description={`Mentions légales du site ${site.name}.`}>
+  <h2>Éditeur du site</h2>
+  <p>
+    {site.legalName}
+    <br />
+    {fullAddress && (
+      <>
+        {fullAddress}
+        <br />
+      </>
+    )}
+    Téléphone : {site.phone.display}
+    <br />
+    {site.email && (
+      <>
+        E-mail : {site.email}
+        <br />
+      </>
+    )}
+    {site.siret && <>SIRET : {site.siret}</>}
+  </p>
+  <p>Directeur de la publication : le représentant légal de {site.legalName}.</p>
+
+  <h2>Hébergement</h2>
+  <p>
+    Le site est hébergé par le prestataire indiqué par l’éditeur. Ses coordonnées sont communiquées
+    sur simple demande.
+  </p>
+
+  <h2>Propriété intellectuelle</h2>
+  <p>
+    Le logo, les textes et les photographies de ce site sont la propriété de {site.legalName}. Les
+    noms de compagnies d’assurance et de constructeurs automobiles cités appartiennent à leurs
+    titulaires respectifs et sont mentionnés à titre informatif, sans lien de partenariat.
+  </p>
+
+  <h2>Offre « {site.offer.headline} »</h2>
+  <p>{site.offer.conditions}</p>
+</LegalPage>

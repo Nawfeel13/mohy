@@ -1,0 +1,37 @@
+---
+import { insurers, carBrands } from '@/config/site';
+---
+
+<div class="grid gap-14 lg:grid-cols-2 lg:gap-20">
+  <div>
+    <h3 class="text-sm font-bold tracking-widest text-mute uppercase">Toutes assurances</h3>
+    <ul class="mt-5 grid grid-cols-2 gap-px overflow-hidden rounded-lg bg-line ring-1 ring-line sm:grid-cols-4">
+      {insurers.map((n) => (
+        <li
+          class="grid h-16 place-items-center bg-white px-2 text-center text-[15px] font-extrabold text-navy"
+          style="font-variation-settings:'wdth' 96"
+        >
+          {n}
+        </li>
+      ))}
+    </ul>
+    <p class="mt-4 text-sm text-mute">
+      Votre compagnie n’est pas dans la liste ? Peu importe : vous avez le libre choix de votre
+      réparateur.
+    </p>
+  </div>
+  <div>
+    <h3 class="text-sm font-bold tracking-widest text-mute uppercase">Toutes marques</h3>
+    <ul class="mt-5 flex flex-wrap gap-2">
+      {carBrands.map((b) => (
+        <li class="rounded-full px-3.5 py-1.5 text-[15px] font-semibold text-ink ring-1 ring-line">
+          {b}
+        </li>
+      ))}
+    </ul>
+    <p class="mt-4 text-sm text-mute">
+      Citadines, SUV, utilitaires, véhicules électriques et hybrides. Vitrage chauffant, acoustique,
+      affichage tête haute.
+    </p>
+  </div>
+</div>
